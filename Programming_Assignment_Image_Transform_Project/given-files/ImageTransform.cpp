@@ -11,8 +11,8 @@
 
 Write your name and email address in the comment space here:
 
-Name:
-Email:
+Name: Mohand Gamal
+Email: mohandgamal1520@gmail.com
 
 (...end multi-line comment.)
 ******************** */
@@ -67,7 +67,20 @@ PNG grayscale(PNG image) {
  * @return The image with a spotlight.
  */
 PNG createSpotlight(PNG image, int centerX, int centerY) {
-
+    for (unsigned x = 0; x < image.width(); x++) {
+    for (unsigned y = 0; y < image.height(); y++) {
+      HSLAPixel & pixel = image.getPixel(x, y);
+      unsigned dst_hor = (unsigned)centerX > x ?(centerX-x) : (x-centerX);
+      unsigned dst_ver = (unsigned)centerY > y ?(centerY-y) : (y-centerY);
+      unsigned total_distance = std::sqrt(dst_hor * dst_hor + dst_ver * dst_ver);
+      if (total_distance >= 160){
+        pixel.l = pixel.l*0.2;
+      }
+      else{
+        pixel.l = pixel.l*(1-(0.005*total_distance));
+      }
+      }
+    }
   return image;
   
 }
@@ -84,7 +97,20 @@ PNG createSpotlight(PNG image, int centerX, int centerY) {
  * @return The illinify'd image.
 **/
 PNG illinify(PNG image) {
-
+    for (unsigned x = 0; x < image.width(); x++) {
+      for (unsigned y = 0; y < image.height(); y++) {
+      HSLAPixel & pixel = image.getPixel(x, y);
+      if(pixel.l>216){}
+      double blue_dist = std::fmod(pixel.h-216.0+360,360) < std::fmod(216.0-pixel.h+360,360) ? std::fmod(pixel.h-216.0+360,360) : std::fmod(216.0-pixel.h+360,360) ;
+      double orange_dist = std::fmod(pixel.h-11.0+360,360) < std::fmod(11.0-pixel.h+360,360) ? std::fmod(pixel.h-11.0+360,360) : std::fmod(11.0-pixel.h+360,360) ;
+      if( orange_dist < blue_dist ){
+        pixel.h=11;
+      }
+      else{
+        pixel.h=216;
+      }
+      }
+      }
   return image;
 }
  
@@ -102,6 +128,14 @@ PNG illinify(PNG image) {
 * @return The watermarked image.
 */
 PNG watermark(PNG firstImage, PNG secondImage) {
-
+    for (unsigned x = 0; x < firstImage.width(); x++) {
+      for (unsigned y = 0; y < firstImage.height(); y++) {
+        HSLAPixel & firstpixel = firstImage.getPixel(x, y);
+        HSLAPixel & secondpixel = secondImage.getPixel(x, y);
+        if(secondpixel.l==1.0){
+          firstpixel.l = firstpixel.l == 1.0 ? firstpixel.l : firstpixel.l == 0.9 ? firstpixel.l +0.1 : firstpixel.l+0.2;
+        }
+      }
+    }
   return firstImage;
 }
